@@ -232,19 +232,22 @@ document.addEventListener("DOMContentLoaded", function(){
 
     document.getElementById("creatorForm").addEventListener("submit", async function(e){
       e.preventDefault();
+
       const data = new FormData(this);
-      let text = "**APLICAȚIE CONTENT CREATOR NOVACRAFT**\n\n";
-      data.forEach((v,k) => { text += `**${k}**: ${v}\n`; });
 
       try {
-        await fetch("https://discord.com/api/webhooks/1476270168622760090/ZnHhF9CW-U5pEYqCG0TZe1XTmQi1RzyQ6boAkSSQSjGnNw9vNmSElwdREKuPQrwgIqRb", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({content:text})
+        await fetch("https://formspree.io/f/mdalbdjo", {
+          method: "POST",
+          body: data,
+          headers: {
+            "Accept": "application/json"
+          }
         });
+
         alert("Aplicația a fost trimisă!");
         this.reset();
         formOverlay.style.display = "none";
+
       } catch(err) {
         alert("Eroare la trimiterea aplicației!");
         console.error(err);
@@ -254,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 
 </body>
+
 
 
 
