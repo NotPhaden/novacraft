@@ -230,25 +230,39 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("closeForm").onclick = () => formOverlay.style.display = "none";
     formOverlay.addEventListener("click", e => { if(e.target === formOverlay) formOverlay.style.display = "none"; });
 
-    document.getElementById("creatorForm").addEventListener("submit", async function(e){
+    const form = document.getElementById("creatorForm");
+
+    form.addEventListener("submit", async function(e){
       e.preventDefault();
+
+      const lastApplied = localStorage.getItem("lastCreatorApply");
+      const now = Date.now();
+
+      if(lastApplied && now - lastApplied < 24 * 60 * 60 * 1000){
+          alert("Poți trimite aplicația o dată la 24 de ore.");
+          return;
+      }
 
       const data = new FormData(this);
 
       try {
-        await fetch("https://formspree.io/f/mdalbdjo", {
+        const response = await fetch("https://formspree.io/f/mdalbdjo", {
           method: "POST",
           body: data,
-          headers: {
-            "Accept": "application/json"
-          }
+          headers: { "Accept": "application/json" }
         });
 
-        alert("Aplicația a fost trimisă!");
-        this.reset();
-        formOverlay.style.display = "none";
+        if(response.ok){
+          alert("Aplicația a fost trimisă!");
+          localStorage.setItem("lastCreatorApply", now); 
+          this.reset();
+          formOverlay.style.display = "none";
+        } else {
+          const result = await response.json();
+          alert(result.error || "Eroare la trimiterea aplicației!");
+        }
 
-      } catch(err) {
+      } catch(err){
         alert("Eroare la trimiterea aplicației!");
         console.error(err);
       }
@@ -257,6 +271,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 
 </body>
+
 
 
 
