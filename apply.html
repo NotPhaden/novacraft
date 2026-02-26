@@ -14,8 +14,6 @@ document.onkeydown = function(e){
 };
 </script>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
 body{background: radial-gradient(circle at 80% 20%, #2a1b4d, #050811 65%);color:white;height:100vh;overflow:hidden}
@@ -128,11 +126,8 @@ button{margin-top:26px;width:100%;padding:14px;border:none;border-radius:14px;ba
 <label>Altele:</label>
 <textarea name="altele"></textarea>
 
-
-<input type="text" name="website" style="display:none">
-
-
-<div class="g-recaptcha" data-sitekey="6LdKt3gsAAAAAOZ7zT3Fe9jOM3x_G3n77ohf5UTr"></div>
+<label>Scrie rezultatul pentru a verifica că nu ești bot: 2 + 3 = ?</label>
+<input name="simpleCaptcha" required>
 
 <button type="submit">Trimite aplicația</button>
 </form>
@@ -141,33 +136,40 @@ button{margin-top:26px;width:100%;padding:14px;border:none;border-radius:14px;ba
 </div>
 
 <script>
-document.getElementById("applyForm").addEventListener("submit", async function(e){
+const form = document.getElementById("applyForm");
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const lastApplied = localStorage.getItem("lastApplied");
+  const now = Date.now();
 
-  if(grecaptcha.getResponse() === ""){
-    alert("Confirmă că nu ești robot");
+  if (lastApplied && now - lastApplied < 24 * 60 * 60 * 1000) {
+    alert("Poți trimite aplicația o dată la 24 de ore.");
     return;
   }
 
-  const data = new FormData(this);
-
-
-  if(data.get("website")){
-    return; 
+  const captchaInput = form.querySelector("[name='simpleCaptcha']").value.trim();
+  if (captchaInput !== "5") { 
+    alert("Răspuns captcha incorect!");
+    return;
   }
 
-  await fetch("https://formspree.io/f/xzdaovyg", {
+  const data = new FormData(form);
+
+  const response = await fetch("https://formspree.io/f/xzdaovyg", {
     method: "POST",
     body: data,
-    headers: {
-      "Accept": "application/json"
-    }
+    headers: { "Accept": "application/json" }
   });
 
-  alert("Aplicația a fost trimisă!");
-  grecaptcha.reset();
-  this.reset();
+  if (response.ok) {
+    alert("Aplicația a fost trimisă!");
+    localStorage.setItem("lastApplied", now); 
+    form.reset();
+  } else {
+    alert("Eroare la trimitere, încearcă din nou.");
+  }
 });
 </script>
 
