@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profil NovaCraft</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
 body {
     margin:0;
@@ -203,7 +204,7 @@ form button {
             </div>
         </div>
 
-        <form onsubmit="saveProfile(); return false;">
+        <form id="editForm" onsubmit="saveProfile(); return false;">
             <input type="text" id="editAvatar" placeholder="Link avatar">
             <input type="text" id="editBackground" placeholder="Link background card">
             <button type="submit">Salvează personalizare</button>
@@ -238,8 +239,13 @@ const db = firebase.database();
 const urlParams = new URLSearchParams(window.location.search);
 let currentUID = urlParams.get("uid");
 
+const editForm = document.getElementById("editForm");
+
 auth.onAuthStateChanged(user => {
-    if(!user && !currentUID){ window.location.href="index.html"; return; }
+    if(!user && !currentUID){ 
+        window.location.href="index.html"; 
+        return; 
+    }
     if(!currentUID && user) currentUID = user.uid;
 
     db.ref("users/"+currentUID).once("value").then(snapshot=>{
@@ -258,7 +264,7 @@ auth.onAuthStateChanged(user => {
         document.getElementById("sidebarUsername").textContent = username;
         document.getElementById("sidebarStatus").textContent = status;
 
-        document.getElementById("usernameTitle").textContent = username;
+        document.getElementById("usernameTitle").textContent = username + (user && user.uid === currentUID ? " (Profilul tău)" : "");
         document.getElementById("rank").textContent = rank;
         document.getElementById("reports").textContent = reports;
         document.getElementById("days").textContent = Math.floor((Date.now()-joined)/86400000);
@@ -267,14 +273,18 @@ auth.onAuthStateChanged(user => {
 
         const profileLink = document.getElementById("profileLink");
         profileLink.href = "profile.html?uid=" + currentUID;
+
+        if(user && user.uid === currentUID){
+            editForm.style.display = "flex";
+        } else {
+            editForm.style.display = "none";
+        }
     });
 });
 
 document.getElementById("copyBtn").onclick = () => {
     const profileLink = document.getElementById("profileLink").href;
-    navigator.clipboard.writeText(profileLink).then(()=>{
-        alert("Link copiat în clipboard!");
-    });
+    navigator.clipboard.writeText(profileLink).then(()=>{ alert("Link copiat în clipboard!"); });
 };
 
 function saveProfile(){
