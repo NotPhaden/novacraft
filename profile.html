@@ -1,4 +1,13 @@
 <head>
+  <link rel="icon" href="logo.png">  
+    <script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.onkeydown = function(e){
+  if (e.key === "F12") return false;
+  if (e.ctrlKey && e.shiftKey && e.key === "I") return false;
+};
+</script>
+    
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profil NovaCraft</title>
@@ -22,9 +31,6 @@ body { margin:0; font-family:Poppins,sans-serif; background:#0a0a1f; color:white
 form { margin-top:20px; display:flex; flex-direction:column; gap:10px; max-width:500px; }
 form input { padding:8px; border-radius:8px; border:none; background:rgba(255,255,255,0.1); color:white; }
 form button { padding:10px; border:none; border-radius:10px; background:linear-gradient(90deg,#7c3aed,#6366f1); color:white; font-weight:600; cursor:pointer; }
-#profileLinkContainer { display:flex; margin-top:10px; justify-content:center; align-items:center; gap:8px; }
-#profileLink { background: rgba(124,58,237,0.7); color:white; padding:6px 10px; border-radius:8px; font-size:14px; cursor:pointer; text-decoration:none; }
-#copyBtn { padding:6px 10px; font-size:14px; border-radius:8px; border:none; background:linear-gradient(90deg,#7c3aed,#6366f1); color:white; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -68,11 +74,6 @@ form button { padding:10px; border:none; border-radius:10px; background:linear-g
             <input type="text" id="editBackground" placeholder="Link background card">
             <button type="submit">Salvează personalizare</button>
         </form>
-
-        <div id="profileLinkContainer">
-            <a href="#" id="profileLink" target="_blank">Link profil</a>
-            <button id="copyBtn">Copiază</button>
-        </div>
     </div>
 </div>
 
@@ -136,17 +137,9 @@ auth.onAuthStateChanged(user => {
 
         if(background) document.getElementById("profileCard").style.background = `url(${background}) center/cover no-repeat`;
 
-        const profileLink = document.getElementById("profileLink");
-        profileLink.href = "profile.html?uid=" + currentUID;
-
         editForm.style.display = isOwner ? "flex" : "none";
     });
 });
-
-document.getElementById("copyBtn").onclick = () => {
-    const profileLink = document.getElementById("profileLink").href;
-    navigator.clipboard.writeText(profileLink).then(()=>{ alert("Link copiat în clipboard!"); });
-};
 
 function saveProfile(){
     const avatar = document.getElementById("editAvatar").value.trim();
