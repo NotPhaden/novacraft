@@ -1,4 +1,11 @@
 <head>
+  <script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.onkeydown = function(e){
+  if (e.key === "F12") return false;
+  if (e.ctrlKey && e.shiftKey && e.key === "I") return false;
+};
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NovaCraft</title>
@@ -237,3 +244,4 @@ profilePic.onclick = () => { window.location.href="profile.html"; };
 </script>
 
 </body>
+
